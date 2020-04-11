@@ -4,6 +4,10 @@ CS451 Project
 
 ## Download dataset
 
-`source cs451/bin/activate`  
-then  
-`kaggle datasets download -d smid80/coronavirus-covid19-tweets`  
+1. `source cs451/bin/activate`  
+
+2. `kaggle datasets download -d smid80/coronavirus-covid19-tweets`  
+
+3. `mkdir data`  
+
+4. `unzip coronavirus-covid19-tweets.zip -d data`  
