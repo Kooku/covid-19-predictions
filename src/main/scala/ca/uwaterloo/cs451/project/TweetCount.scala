@@ -51,17 +51,15 @@ object TweetCount {
     val counts = textFile
       .map(line => {
         val lineSplit = line.split(",", -1)
+        var createdAt = ""
         if (lineSplit.length > 2) {
-          val createdAt = lineSplit(2).slice(0, 10)
-          if (createdAt.matches("[0-9]{4}-[0-9]{2}-[0-9]{2}")) {
-            println("TEST")
-            ("1", 1)
-          }
+          createdAt = lineSplit(2).slice(0, 10)
         }
-        ("", 0)
+        (createdAt, 1)
       })
-      .filter(_._1.contains("1"))
-      // .reduceByKey(_ + _)
+      .filter(_._1.matches("[0-9]{4}-[0-9]{2}-[0-9]{2}"))
+      .reduceByKey(_ + _)
+      .sortByKey(true, 1)
       // .foreach(println)
 
     counts.saveAsTextFile(args.output())
