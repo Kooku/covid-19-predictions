@@ -16,8 +16,6 @@
 
 package ca.uwaterloo.cs451.project
 
-import io.bespin.scala.util.Tokenizer
-
 import collection.mutable.HashMap
 
 import org.apache.log4j._
@@ -26,36 +24,23 @@ import org.apache.spark.SparkContext
 import org.apache.spark.SparkConf
 import org.rogach.scallop._
 
-class Conf(args: Seq[String]) extends ScallopConf(args) {
-  mainOptions = Seq(input, output, reducers)
+class CustomConf(args: Seq[String]) extends ScallopConf(args) {
+  mainOptions = Seq(input, output)
   val input = opt[String](descr = "input path", required = true)
   val output = opt[String](descr = "output path", required = true)
-  val reducers = opt[Int](descr = "number of reducers", required = false, default = Some(1))
-  val imc = opt[Boolean](descr = "use in-mapper combining", required = false)
   verify()
 }
 
-object SentenceVectorizer extends Tokenizer {
+object TweetCount {
   val log = Logger.getLogger(getClass().getName())
 
-  def wcIter(iter: Iterator[String]): Iterator[(String, Int)] = {
-    val counts = new HashMap[String, Int]() { override def default(key: String) = 0 }
-
-    iter.flatMap(line => tokenize(line))
-      .foreach { t => counts.put(t, counts(t) + 1) }
-
-    counts.iterator
-  }
-
   def main(argv: Array[String]) {
-    val args = new Conf(argv)
+    val args = new CustomConf(argv)
 
     log.info("Input: " + args.input())
     log.info("Output: " + args.output())
-    log.info("Number of reducers: " + args.reducers())
-    log.info("Use in-mapper combining: " + args.imc())
 
-    val conf = new SparkConf().setAppName("SentenceVectorizer")
+    val conf = new SparkConf().setAppName("Tweet Count")
     val sc = new SparkContext(conf)
 
     val outputDir = new Path(args.output())
@@ -63,17 +48,22 @@ object SentenceVectorizer extends Tokenizer {
 
     val textFile = sc.textFile(args.input())
 
-    if (!args.imc()) {
-      textFile
-        .flatMap(line => tokenize(line))
-        .map(word => (word, 1))
-        .reduceByKey(_ + _)
-        .saveAsTextFile(args.output())
-    } else {
-      textFile
-        .mapPartitions(wcIter)
-        .reduceByKey(_ + _)
-        .saveAsTextFile(args.output())
-    }
+    val counts = textFile
+      .map(line => {
+        val lineSplit = line.split(",", -1)
+        if (lineSplit.length > 2) {
+          val createdAt = lineSplit(2).slice(0, 10)
+          if (createdAt.matches("[0-9]{4}-[0-9]{2}-[0-9]{2}")) {
+            println("TEST")
+            ("1", 1)
+          }
+        }
+        ("", 0)
+      })
+      .filter(_._1.contains("1"))
+      // .reduceByKey(_ + _)
+      // .foreach(println)
+
+    counts.saveAsTextFile(args.output())
   }
 }
