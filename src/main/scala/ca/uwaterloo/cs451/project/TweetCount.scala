@@ -60,7 +60,6 @@ object TweetCount {
       .filter(_._1.matches("[0-9]{4}-[0-9]{2}-[0-9]{2}"))
       .reduceByKey(_ + _)
       .sortByKey(true, 1)
-      // .foreach(println)
 
     counts.saveAsTextFile(args.output())
   }
