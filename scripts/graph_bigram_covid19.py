@@ -7,10 +7,14 @@ stay_home =  np.array([4573, 5777, 5489, 4356, 5796, 5719, 5440, 5294, 5979, 513
 cum_covid_19 = np.cumsum(covid_19)
 cum_stay_home = np.cumsum(stay_home)
 dates = np.array([x for x in range(0,23)])
+coefficients = np.polyfit(dates, stay_home_all, 3)
 
-# m, b = np.polyfit(dates, cum_stay_home, 1)
+poly = np.poly1d(coefficients)
+new_x = np.linspace(dates[0], dates[-1])
+new_y = poly(new_x)
 
-plt.plot(dates, stay_home_all, label='stay home')
+plt.plot(dates, stay_home_all, 'o', label='data')
+plt.plot(new_x, new_y, label='fitted curve')
 # plt.plot(dates, cum_covid_19, label='covid 19')
 # plt.plot(dates, m*dates + b, label='Best fit line')
 plt.legend()
