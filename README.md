@@ -12,9 +12,7 @@ CS451 Project
 
 4. `unzip coronavirus-covid19-tweets.zip -d data`  
 
-5. remove first lines from all tweet csv files (2020-03-*.CSV), and combine all files together. (ex. `cat file1 file2 file3 > merged_data.csv`). Then put them inside data directory.  
-
-6. If you want to run on datasci, I think you have to `hadoop fs -put merged_data.csv` and change the datasci command below.  
+5. Combine all files together. (ex. `cat file1 file2 file3 > merged_data.csv`). Then put them inside data directory.  
 
 
 ## Commands to run spark
