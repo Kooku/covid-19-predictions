@@ -21,4 +21,16 @@ CS451 Project
 `spark-submit --class ca.uwaterloo.cs451.project.TweetCount target/assignments-1.0.jar --input data/trunc-2020-03-12.csv --output output`
 
 ### Datasci
-`spark-submit --class ca.uwaterloo.cs451.project.TweetCount --num-executors 2 --executor-cores 4 --executor-memory 24G target/assignments-1.0.jar --input /user/ky2shin/merged_data.csv --output output`  
+
+Put File into HDFS
+
+`hadoop fs -put <file>`
+
+Run Task
+
+`spark-submit --class ca.uwaterloo.cs451.project.TweetCount --num-executors 2 --executor-cores 4 --executor-memory 24G target/assignments-1.0.jar --input /user/<username>/merged_data.csv --output output`  
+
+
+Print Output
+
+`hadoop fs -cat output/*`
