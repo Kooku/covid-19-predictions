@@ -71,7 +71,7 @@ object Top100BigramCount extends Tokenizer {
         val tokens = tokenize(text)
         if (tokens.length > 1) tokens.sliding(2).map(p => p.mkString(" ")).map(bigram => ((countryCode, bigram, createdAt), 1)).toList else List()
       })
-      .filter(kvp => kvp._1._1 == "CA" && kvp._1._3.matches("[0-9]{4}-[0-9]{2}-[0-9]{2}") && broadcastVar.value.contains(kvp._1._2))
+      .filter(kvp => kvp._1._3.matches("[0-9]{4}-[0-9]{2}-[0-9]{2}") && broadcastVar.value.contains(kvp._1._2))
       .map(kvp => ((kvp._1._2, kvp._1._3), kvp._2))
       .reduceByKey(_ + _)
       .sortByKey(true, 1)
