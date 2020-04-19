@@ -38,6 +38,9 @@ object AllBigramCountDateAgnostic extends Tokenizer {
     val sc = new SparkContext(conf)
     val threshold = args.threshold()
 
+    val stopwords = List("i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you", "your", "yours", "yourself", "yourselves", "he", "him", "his", "himself", "she", "her", "hers", "herself", "it", "its", "itself", "they", "them", "their", "theirs", "themselves", "what", "which", "who", "whom", "this", "that", "these", "those", "am", "is", "are", "was", "were", "be", "been", "being", "have", "has", "had", "having", "do", "does", "did", "doing", "a", "an", "the", "and", "but", "if", "or", "because", "as", "until", "while", "of", "at", "by", "for", "with", "about", "against", "between", "into", "through", "during", "before", "after", "above", "below", "to", "from", "up", "down", "in", "out", "on", "off", "over", "under", "again", "further", "then", "once", "here", "there", "when", "where", "why", "how", "all", "any", "both", "each", "few", "more", "most", "other", "some", "such", "no", "nor", "not", "only", "own", "same", "so", "than", "too", "very", "s", "t", "can", "will", "just", "don", "should", "now")
+    val stopwordsB = sc.broadcast(stopwords)
+
     val outputDir = new Path(args.output())
     FileSystem.get(sc.hadoopConfiguration).delete(outputDir, true)
 
@@ -58,17 +61,17 @@ object AllBigramCountDateAgnostic extends Tokenizer {
           countryCode = lineSplit(13)
         }
 
-        val tokens = tokenize(text)
+        val tokens = tokenize(text).filter(word => !stopwordsB.value.contains(word))
         
         if (tokens.length > 1) tokens.sliding(2).map(p => p.mkString(" ")).map(bigram => ((countryCode, bigram), 1)).toList else List()
       })
-      .filter(kvp => kvp._1._1 == "CA")
+      // .filter(kvp => kvp._1._1 == "CA")
       .map(kvp => (kvp._1._2, kvp._2))
       .reduceByKey(_ + _)
       .filter(kvp => kvp._2 >= threshold)
       .map(kvp => (kvp._2, kvp._1))
       .sortByKey(false, 1)
-      .take(100)
+      .take(1000)
 
     sc.parallelize(counts).saveAsTextFile(args.output())
   }
