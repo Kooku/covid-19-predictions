@@ -23,6 +23,11 @@ contact = [1001, 1001, 1001, 1001, 1001, 1001, 1001, 1001, 1001, 1001, 1001, 100
 
 predict = [1809.666114, 2255.752702, 2773.287887, 3365.820306, 4035.861254, 4784.804746, 5612.888735, 6519.196544, 7501.695407, 8557.307478, 9682.007562, 10870.94126, 12118.55708, 13418.74631, 14764.98504, 16150.47339, 17568.2678, 19011.40341, 20473.00394, 21946.37793, 23425.10023, 24903.07894, 26374.60797, 27834.40601, 29277.64309, 30699.95584, 32097.45285, 33466.7116, 34804.76820726625, 36109.10137742164, 37377.61184645985, 38608.59832212259, 39800.73100866787, 40953.02356439783, 42064.804249323315, 43135.686896631574, 44165.54222942782, 45154.469941364136, 46102.77186732711, 47010.92648874634, 47879.564947249855, 48709.44867995164, 49501.448738919404]
 
+sign_avg = sum(sign[10:]) / len(sign[10:])
+stay_avg = sum(stay[10:]) / len(stay[10:])
+herd_avg = sum(herd[10:]) / len(herd[10:])
+contact_avg = sum(contact[10:]) / len(contact[10:])
+
 nums = [1,2,3,4,5]
 adjustment_records = []
 for a,b,c,d in itertools.product(range(1,6),repeat=4):
@@ -41,4 +46,7 @@ for a,b,c,d in itertools.product(range(1,6),repeat=4):
 
 adjustment_records.sort(key=lambda x:x[1], reverse=True)
 for item in adjustment_records[:10]:
-    print(item)
+    print('a,b,c,d: {}, improvement percentage: {}%'.format(item[0], item[1]*100))
+
+multiplier = 1 - calc_weight(sign_avg)*10 - calc_weight(stay_avg)*10 + 50*calc_weight(herd_avg) - 40*calc_weight(contact_avg)
+print(multiplier)
